@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Simple E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header">
+    <h1 class="section-title">Account Profile</h1>
+  </div>
+
+  <div class="cart-layout">
+    <!-- Profile Form -->
+    <div class="cart-card">
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-dark); margin-bottom: 1.5rem;">
+        Personal Information
+      </h2>
+
+      <form method="post" action="{% url 'store:profile' %}">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-error">
+            {% for error in form.non_field_errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" value="{{ user.username }}" class="form-input" disabled style="background-color: var(--color-light); cursor: not-allowed;">
+          <span class="form-help">Username cannot be modified once registered.</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="{{ form.first_name.id_for_label }}">First Name</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+              <span class="form-error">{{ form.first_name.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+              <span class="form-error">{{ form.last_name.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <span class="form-error">{{ form.email.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnSaveProfile" style="margin-top: 0.5rem;">
+          Save Profile Changes
+        </button>
+      </form>
+    </div>
+
+    <!-- User Activity Summary Card -->
+    <div class="summary-card">
+      <h3 class="summary-title">Account Activity</h3>
+      
+      <div class="summary-row">
+        <span>Member Since:</span>
+        <strong>{{ user.date_joined|date:"M Y" }}</strong>
+      </div>
+      
+      <div class="summary-row">
+        <span>Total Orders:</span>
+        <strong style="font-size: 1.1rem; color: var(--color-primary);">{{ order_count }}</strong>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--color-border);">
+        <a href="{% url 'store:order_list' %}" class="btn btn-outline btn-block" id="btnViewMyOrders">
+          View My Orders &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

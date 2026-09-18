@@ -1,0 +1,6 @@
+{
+  "name": "Simple E-Commerce Store",
+  "description": "A complete Django-powered simple e-commerce store with product browsing, categories, cart management, checkout, order tracking, and Django admin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

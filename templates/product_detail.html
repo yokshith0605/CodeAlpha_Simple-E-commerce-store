@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Simple E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Breadcrumbs -->
+  <nav style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--color-text-muted);">
+    <a href="{% url 'store:home' %}">Home</a> &gt; 
+    <a href="{% url 'store:product_list' %}">Products</a> &gt; 
+    <a href="{% url 'store:product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a> &gt; 
+    <span style="color: var(--color-dark); font-weight: 600;">{{ product.name }}</span>
+  </nav>
+
+  <!-- Product Detail Section -->
+  <div class="product-detail-layout" id="productDetail">
+    <!-- Media Column -->
+    <div class="detail-media">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="detail-img">
+      {% else %}
+        <div class="product-placeholder-icon" style="font-size: 1.25rem;">
+          <span style="font-size: 5rem;">
+            {% if product.category.name == 'Electronics' %}🎧
+            {% elif product.category.name == 'Clothing' %}👔
+            {% elif product.category.name == 'Books' %}📖
+            {% elif product.category.name == 'Home & Kitchen' %}🛋️
+            {% else %}📦
+            {% endif %}
+          </span>
+          <span style="color: var(--color-text-muted); font-weight: 600; margin-top: 0.5rem;">
+            {{ product.category.name }}
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Content / Purchase Column -->
+    <div class="detail-content">
+      <div class="detail-category">
+        <a href="{% url 'store:product_list' %}?category={{ product.category.slug }}">
+          {{ product.category.name }}
+        </a>
+      </div>
+      <h1 class="detail-title">{{ product.name }}</h1>
+
+      <div class="detail-price-row">
+        <span class="detail-price">${{ product.price }}</span>
+        {% if product.in_stock %}
+          <span class="detail-stock-badge badge-in-stock">In Stock ({{ product.stock }} available)</span>
+        {% else %}
+          <span class="detail-stock-badge badge-out-of-stock">Out of Stock</span>
+        {% endif %}
+      </div>
+
+      <div class="detail-description">
+        <p>{{ product.description }}</p>
+      </div>
+
+      <!-- Add to Cart Form -->
+      {% if product.in_stock %}
+        <form action="{% url 'store:cart_add' product.id %}" method="post" class="detail-form">
+          {% csrf_token %}
+          <label class="form-label" style="margin-bottom: 0;">Quantity:</label>
+          <div class="quantity-control">
+            <button type="button" class="qty-btn qty-btn-minus" aria-label="Decrease quantity">-</button>
+            <input 
+              type="number" 
+              name="quantity" 
+              value="1" 
+              min="1" 
+              max="{{ product.stock }}" 
+              class="qty-input"
+              id="productQtyInput"
+              required
+            >
+            <button type="button" class="qty-btn qty-btn-plus" aria-label="Increase quantity">+</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" id="btnAddToCart">
+            Add to Shopping Cart
+          </button>
+        </form>
+      {% else %}
+        <div class="alert alert-error" style="margin-top: 1rem;">
+          This item is currently sold out and cannot be added to the cart.
+        </div>
+      {% endif %}
+
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); font-size: 0.85rem; color: var(--color-text-muted);">
+        <p>🔒 <strong>Academic Demo:</strong> Stock deduction is transactional and locked during checkout using <code>select_for_update()</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products Section -->
+  {% if related_products %}
+    <section style="margin-top: 3rem;">
+      <div class="section-header">
+        <h2 class="section-title">More in {{ product.category.name }}</h2>
+        <a href="{% url 'store:product_list' %}?category={{ product.category.slug }}" class="section-link">View All &rarr;</a>
+      </div>
+
+      <div class="product-grid">
+        {% for rel_prod in related_products %}
+          <div class="product-card">
+            <div class="product-media" style="height: 160px;">
+              {% if rel_prod.image %}
+                <img src="{{ rel_prod.image.url }}" alt="{{ rel_prod.name }}" class="product-img">
+              {% else %}
+                <span style="font-size: 2rem;">📦</span>
+              {% endif %}
+            </div>
+            <div class="product-body">
+              <h4 class="product-title" style="font-size: 0.95rem;">
+                <a href="{{ rel_prod.get_absolute_url }}">{{ rel_prod.name }}</a>
+              </h4>
+              <div class="product-footer">
+                <span class="product-price" style="font-size: 1.05rem;">${{ rel_prod.price }}</span>
+                <a href="{{ rel_prod.get_absolute_url }}" class="btn btn-outline btn-sm">View</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

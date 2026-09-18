@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed - Simple E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="success-hero-card" id="orderSuccessCard">
+    <div class="success-icon-badge">✓</div>
+    <h1 style="font-size: 2rem; font-weight: 800; color: var(--color-dark); margin-bottom: 0.5rem;">
+      Thank You for Your Order!
+    </h1>
+    <p style="color: var(--color-text-muted); font-size: 1.05rem;">
+      Your purchase has been received and is being processed by our store fulfillment system.
+    </p>
+
+    <!-- Order Metadata Box -->
+    <div class="order-info-box">
+      <div class="order-info-grid">
+        <div>
+          <span class="order-meta-label">Order Number</span>
+          <div class="order-meta-val" style="color: var(--color-primary);">#{{ order.order_number }}</div>
+        </div>
+        <div>
+          <span class="order-meta-label">Order Date</span>
+          <div class="order-meta-val">{{ order.created_at|date:"M d, Y" }}</div>
+        </div>
+        <div>
+          <span class="order-meta-label">Status</span>
+          <div>
+            <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+          </div>
+        </div>
+        <div>
+          <span class="order-meta-label">Total Amount</span>
+          <div class="order-meta-val">${{ order.total_amount }}</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--color-border);">
+        <span class="order-meta-label">Shipping Destination</span>
+        <p style="margin-top: 0.25rem; color: var(--color-text-main);">
+          <strong>{{ order.full_name }}</strong> &bull; {{ order.email }} &bull; {{ order.phone_number }}<br>
+          {{ order.shipping_address }}<br>
+          {{ order.city }}, {{ order.state }} {{ order.postal_code }}, {{ order.country }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Items Summary Table -->
+    <div style="text-align: left; margin-bottom: 2rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-dark); margin-bottom: 1rem;">
+        Items in This Order
+      </h3>
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Unit Price</th>
+              <th>Quantity</th>
+              <th>Line Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in order.items.all %}
+              <tr>
+                <td>
+                  <strong>{{ item.product.name }}</strong>
+                  <div style="font-size: 0.8rem; color: var(--color-text-muted);">
+                    Category: {{ item.product.category.name }}
+                  </div>
+                </td>
+                <td>${{ item.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td><strong>${{ item.get_cost }}</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'store:order_list' %}" class="btn btn-primary btn-lg">
+        View My Order History
+      </a>
+      <a href="{% url 'store:product_list' %}" class="btn btn-outline btn-lg">
+        Continue Shopping
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

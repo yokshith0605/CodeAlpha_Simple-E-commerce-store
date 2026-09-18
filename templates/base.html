@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Simple E-Commerce Store{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Site Navigation Header -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-container">
+      <a href="{% url 'store:home' %}" class="brand-logo" id="brandLogo">
+        <div class="brand-icon">🛒</div>
+        <span>Simple Store</span>
+      </a>
+
+      <!-- Mobile Nav Toggle Button -->
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation" aria-expanded="false">
+        ☰
+      </button>
+
+      <!-- Main Navigation Menu -->
+      <nav class="main-nav" id="mainNav">
+        <a href="{% url 'store:home' %}" class="nav-link" id="navHome">Home</a>
+        <a href="{% url 'store:product_list' %}" class="nav-link" id="navProducts">Products</a>
+        <a href="{% url 'store:about' %}" class="nav-link" id="navAbout">About Project</a>
+        
+        <!-- Shopping Cart Link with Live Session Counter -->
+        <a href="{% url 'store:cart_detail' %}" class="nav-link" id="navCart">
+          Cart <span class="nav-cart-badge" id="cartBadge">{{ cart_total_items }}</span>
+        </a>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'store:order_list' %}" class="nav-link" id="navOrders">My Orders</a>
+          <a href="{% url 'store:profile' %}" class="nav-link" id="navProfile">Profile</a>
+          <span class="nav-user-greeting">Hi, {{ user.first_name|default:user.username }}</span>
+          <a href="{% url 'store:logout' %}" class="nav-btn nav-btn-outline" id="navLogout">Logout</a>
+        {% else %}
+          <a href="{% url 'store:login' %}" class="nav-link" id="navLogin">Login</a>
+          <a href="{% url 'store:register' %}" class="nav-btn nav-btn-primary" id="navRegister">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash Messages / Notifications -->
+  {% if messages %}
+    <div class="messages-container" id="messagesContainer">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">
+          <span>{{ message }}</span>
+          <button type="button" class="alert-close" aria-label="Close notification">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content Body -->
+  <main class="main-wrapper" id="mainContent">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer" id="siteFooter">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Simple E-Commerce Store</h4>
+          <p>
+            A clean, educational full-stack e-commerce web application developed with Python, 
+            Django, and SQLite. Features session-based carts, inventory tracking, and checkout.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'store:home' %}">Home</a></li>
+            <li><a href="{% url 'store:product_list' %}">All Products</a></li>
+            <li><a href="{% url 'store:cart_detail' %}">Shopping Cart</a></li>
+            <li><a href="{% url 'store:about' %}">Project Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul class="footer-links">
+            {% for cat in all_categories|slice:":5" %}
+              <li><a href="{% url 'store:product_list' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+            {% empty %}
+              <li><span>Electronics</span></li>
+              <li><span>Clothing</span></li>
+              <li><span>Books</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Academic Info</h4>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+            Demo transaction mode enabled. No real credit/debit card information collected.
+          </p>
+          {% if user.is_staff %}
+            <p style="margin-top: 0.5rem;"><a href="/admin/" style="font-weight: 600; color: var(--color-primary);">Admin Portal &rarr;</a></p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Simple E-Commerce Store. Built for academic demonstration.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Vanilla JS Script -->
+  <script src="{% static 'js/script.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

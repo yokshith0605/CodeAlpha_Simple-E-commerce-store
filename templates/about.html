@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}About Project - Simple E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header">
+    <h1 class="section-title">Architecture & System Design</h1>
+  </div>
+
+  <div class="academic-card">
+    <h2>1. Project Overview</h2>
+    <p>
+      <strong>Simple E-Commerce Store</strong> is a full-featured, educational web application 
+      engineered in strict adherence to Django's Model-View-Template (MVT) pattern. 
+      It is designed to serve as a reference implementation for university and portfolio 
+      demonstrations, completely free of external CSS/JS frameworks (such as Bootstrap or Tailwind) 
+      while providing a clean, responsive user experience using pure semantic HTML5, CSS3, and vanilla JavaScript.
+    </p>
+
+    <div class="tech-tag-list">
+      <span class="tech-tag">Python 3</span>
+      <span class="tech-tag">Django 4 / 5</span>
+      <span class="tech-tag">SQLite</span>
+      <span class="tech-tag">Pure CSS3</span>
+      <span class="tech-tag">Vanilla JavaScript</span>
+      <span class="tech-tag">Session Engine</span>
+      <span class="tech-tag">Atomic Transactions</span>
+    </div>
+  </div>
+
+  <div class="academic-card">
+    <h2>2. Data Models & Entity Relationships</h2>
+    <p>
+      The persistence layer is structured across four normalized relational models:
+    </p>
+    <ul style="margin-left: 1.5rem; color: var(--color-secondary); line-height: 1.8;">
+      <li><strong>Category:</strong> Groups catalog products with unique URL slugs and descriptions.</li>
+      <li><strong>Product:</strong> Tracks item name, category foreign key, price (<code>DecimalField</code>), stock quantity, and availability flags.</li>
+      <li><strong>Order:</strong> Records buyer details, generated order identifiers, total amounts, shipping destinations, and fulfillment statuses (Pending, Processing, Shipped, Delivered, Cancelled).</li>
+      <li><strong>OrderItem:</strong> Line items linking an order to specific products with purchase-time price lock-in to protect against subsequent price changes.</li>
+    </ul>
+
+    <div class="flowchart-box">
++------------------+         +------------------+
+|     Category     | 1 --- * |     Product      |
++------------------+         +------------------+
+                                       ^
+                                       |
++------------------+         +---------|--------+
+|      Order       | 1 --- * |    OrderItem     |
++------------------+         +------------------+
+    </div>
+  </div>
+
+  <div class="academic-card">
+    <h2>3. Concurrency & Stock Safety</h2>
+    <p>
+      Unlike naive demo stores where overselling can occur when multiple buyers checkout simultaneously, 
+      this project wraps inventory deduction inside <code>transaction.atomic()</code> blocks and applies 
+      row-level database locks using <code>Product.objects.select_for_update()</code>.
+    </p>
+    <div class="flowchart-box">
+User Submits Checkout 
+  --> Begin Atomic Transaction 
+  --> select_for_update() on cart products (row locks acquired)
+  --> Validate (stock &gt;= cart quantity)
+        [If False]: Rollback &amp; Show Error Message
+        [If True]:  Deduct Stock -> Create Order &amp; Items -> Commit Transaction
+    </div>
+  </div>
+
+  <div class="academic-card">
+    <h2>4. Django Admin & Management Commands</h2>
+    <p>
+      The platform integrates Django's built-in administration panel at <code>/admin/</code>, 
+      featuring filterable search tables, inline order item editing, and batch status controls. 
+      The database can be seeded automatically via the custom management command:
+    </p>
+    <div class="flowchart-box">
+python manage.py seed_data
+    </div>
+    <p>
+      This provisions 5 core retail categories, at least 15 sample products with realistic specifications, 
+      and an optional pre-configured demo user account.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - Simple E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="auth-wrapper">
+    <div class="auth-card" id="loginCard">
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Sign in to your account to manage orders and checkout</p>
+
+      <form method="post" action="{% url 'store:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-error">
+            {% for error in form.non_field_errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <span class="form-error">{{ form.username.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+          {{ form.password }}
+          {% if form.password.errors %}
+            <span class="form-error">{{ form.password.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btnSubmitLogin" style="margin-top: 1rem;">
+          Sign In
+        </button>
+      </form>
+
+      <!-- Demo Quick Helper Box -->
+      <div class="demo-payment-note" style="margin-top: 1.5rem; text-align: left;">
+        <strong>Quick Demo Login:</strong><br>
+        Username: <code>demo</code><br>
+        Password: <code>demo12345</code>
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account yet? 
+        <a href="{% url 'store:register' %}" style="font-weight: 600;">Create an account</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
